@@ -4,448 +4,812 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="_baahLtyrwSMIsrMTSXHLJvSspXrJGn1Hf-fR_1JbnU" />
-    <title>ECI - Education Community Indonesia | Joining System</title>
+    <title>Pendaftaran - Education Community Indonesia (ECI)</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons via SVG or CDN for fallback, but we will use Lucide icons & Custom SVGs -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for PDF/Image download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        eci: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#b9defe',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        neutral: {
+                            950: '#0b0f19'
+                        }
+                    },
+                    fontSize: {
+                        'xs-tiny': '0.7rem',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --neon-cyan: #00f3ff;
-            --neon-pink: #ff003c;
-            --dark-bg: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-        }
-
         body {
-            background-color: var(--dark-bg);
-            color: #e0e0e0;
-            font-family: 'JetBrains Mono', monospace;
-            overflow-x: hidden;
-            font-size: 0.85rem; /* Teks dominan kecil sesuai permintaan */
+            font-family: 'Inter', sans-serif;
+            background-color: #fcfcfd;
+            color: #1f2937;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .smooth-scroll {
+            scroll-behavior: smooth;
         }
 
-        /* --- Loading Screen --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-out;
-        }
-
-        .glitch-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: var(--neon-cyan);
-            letter-spacing: 5px;
-            animation: glitch 2s infinite;
-        }
-
-        @keyframes glitch {
-            0% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-cyan); }
-            50% { text-shadow: -2px 0 var(--neon-pink), 2px 0 var(--neon-cyan); }
-            100% { text-shadow: 2px 0 var(--neon-pink), -2px 0 var(--neon-cyan); }
-        }
-
-        .progress-bar {
-            width: 200px;
-            height: 2px;
-            background: #222;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill {
+        /* Loading Animation */
+        .loading-bar {
             width: 0%;
-            height: 100%;
-            background: var(--neon-cyan);
-            animation: fill 3s forwards;
+            animation: progress 3s cubic-bezier(0.1, 0.85, 0.45, 1) forwards;
         }
-
-        @keyframes fill {
+        @keyframes progress {
             0% { width: 0%; }
             100% { width: 100%; }
         }
 
-        /* --- Form Styling --- */
-        .cyber-input {
-            background: var(--glass-bg);
-            border: 1px solid #333;
-            color: white;
-            padding: 0.5rem;
-            width: 100%;
-            outline: none;
-            transition: all 0.3s;
-            border-radius: 2px;
-            font-size: 0.75rem;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
-        .cyber-input:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        /* Avatar overlay glow */
+        .avatar-glow {
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.1);
         }
-
-        .cyber-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: #888;
-            margin-bottom: 4px;
-            display: block;
-            letter-spacing: 1px;
-        }
-
-        .btn-neon {
-            background: transparent;
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 10px 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-neon:hover {
-            background: var(--neon-cyan);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-cyan);
-        }
-
-        /* --- Cards Design (Pure CSS) --- */
-        .card-container {
-            display: none; /* Hidden until success */
-            padding: 20px 0;
-        }
-
-        .member-card {
-            width: 350px;
-            height: 200px;
-            background: #111;
-            border: 1px solid var(--neon-cyan);
-            position: relative;
-            padding: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-            margin: 0 auto 20px auto;
-        }
-
-        .card-bg-pattern {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.05;
-            background-image: linear-gradient(0deg, transparent 24%, rgba(0, 243, 255, .5) 25%, rgba(0, 243, 255, .5) 26%, transparent 27%, transparent 74%, rgba(0, 243, 255, .5) 75%, rgba(0, 243, 255, .5) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 243, 255, .5) 25%, rgba(0, 243, 255, .5) 26%, transparent 27%, transparent 74%, rgba(0, 243, 255, .5) 75%, rgba(0, 243, 255, .5) 76%, transparent 77%, transparent);
-            background-size: 20px 20px;
-            pointer-events: none;
-        }
-
-        .card-header {
-            border-bottom: 1px solid var(--neon-cyan);
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 10px;
-            color: var(--neon-cyan);
-        }
-
-        .card-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .card-id {
-            font-size: 8px;
-            color: #555;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        .form-summary-card {
-            width: 350px;
-            background: #111;
-            border-left: 4px solid var(--neon-pink);
-            border-top: 1px solid #333;
-            border-right: 1px solid #333;
-            border-bottom: 1px solid #333;
-            padding: 20px;
-            margin: 0 auto;
-            font-size: 9px;
-            line-height: 1.6;
-        }
-
-        .scan-line {
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 243, 255, 0.2);
-            position: absolute;
-            top: 0;
-            animation: scan 4s linear infinite;
-        }
-
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
-        /* --- Utilities --- */
-        .hidden-section { display: none; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="smooth-scroll overflow-x-hidden">
 
-    <!-- Loading Screen -->
-    <div id="loader">
-        <div class="glitch-text">ECI_NETWORK</div>
-        <div class="text-xs mt-2 text-gray-500">INITIALIZING SECURE LINK...</div>
-        <div class="progress-bar">
-            <div class="progress-fill"></div>
+    <!-- 1. LOADING SCREEN (3 Detik) -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white transition-opacity duration-500">
+        <div class="text-center px-4 max-w-sm">
+            <!-- Logo ECI Minimalis -->
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-eci-50 border border-eci-100 text-eci-600 mb-4 animate-pulse">
+                <span class="font-heading font-extrabold text-lg tracking-wider">ECI</span>
+            </div>
+            <h2 class="font-heading text-xs font-bold tracking-[0.25em] text-neutral-900 uppercase mb-1">Education Community</h2>
+            <p class="text-[10px] text-gray-400 font-medium tracking-wide mb-6">Indonesia</p>
+            
+            <!-- Progress Bar Container -->
+            <div class="w-48 h-[3px] bg-gray-100 rounded-full overflow-hidden mx-auto">
+                <div class="h-full bg-eci-600 loading-bar"></div>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2 font-light">Menyiapkan gerbang pendaftaran...</p>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 py-12 max-w-xl">
-        <header class="mb-12 text-center">
-            <h1 class="font-['Orbitron'] text-2xl text-white tracking-widest mb-2">ECI</h1>
-            <p class="text-[0.6rem] text-gray-400 uppercase tracking-[0.3em]">Education Community Indonesia // Protocol Join</p>
+    <!-- MAIN WRAPPER (Hidden initially, shown after load) -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-700 min-h-screen flex flex-col justify-between">
+        
+        <!-- HEADER / NAVIGATION -->
+        <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 sm:px-6">
+            <div class="max-w-5xl mx-auto flex items-center justify-between">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-eci-600 text-white font-heading font-extrabold text-xs tracking-wider">
+                        E
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-heading font-bold text-xs tracking-wide text-gray-900">Education Community</span>
+                        <span class="text-[8px] tracking-[0.2em] font-bold text-eci-600 uppercase">Indonesia</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-3">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
+                        <span class="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Pendaftaran Dibuka
+                    </span>
+                </div>
+            </div>
         </header>
 
-        <!-- Form Section -->
-        <section id="form-section">
-            <form id="eci-form" class="space-y-6">
-                <div>
-                    <label class="cyber-label">Nama Lengkap</label>
-                    <input type="text" id="nama" class="cyber-input" required placeholder="JASON BOURNE">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="cyber-label">Tanggal Lahir</label>
-                        <input type="date" id="dob" class="cyber-input" required>
+        <!-- MAIN CONTAINER -->
+        <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8 sm:px-6">
+            
+            <!-- STEPPER INDICATOR -->
+            <div class="mb-10 text-center max-w-md mx-auto">
+                <span class="text-[9px] font-bold tracking-[0.2em] text-eci-600 uppercase block mb-2">Proses Registrasi</span>
+                <div class="flex items-center justify-between px-6 relative">
+                    <!-- Line connector -->
+                    <div class="absolute top-1/2 left-0 right-0 h-[1px] bg-gray-200 -translate-y-1/2 z-0"></div>
+                    <div id="line-progress" class="absolute top-1/2 left-0 h-[1px] bg-eci-600 -translate-y-1/2 z-0 transition-all duration-500" style="width: 0%;"></div>
+                    
+                    <!-- Step 1 -->
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-dot-1" class="w-6 h-6 rounded-full bg-eci-600 text-white text-[10px] font-bold flex items-center justify-center border-4 border-white shadow-sm transition-all duration-300">
+                            1
+                        </div>
+                        <span class="text-[9px] font-medium text-gray-600 mt-1">Isi Formulir</span>
                     </div>
-                    <div>
-                        <label class="cyber-label">Gender</label>
-                        <select id="gender" class="cyber-input" required>
-                            <option value="">Pilih</option>
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
+
+                    <!-- Step 2 -->
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-dot-2" class="w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-[10px] font-bold flex items-center justify-center border-4 border-white shadow-sm transition-all duration-300">
+                            2
+                        </div>
+                        <span class="text-[9px] font-medium text-gray-400 mt-1">Verifikasi & Card</span>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div id="step-dot-3" class="w-6 h-6 rounded-full bg-gray-100 text-gray-400 text-[10px] font-bold flex items-center justify-center border-4 border-white shadow-sm transition-all duration-300">
+                            3
+                        </div>
+                        <span class="text-[9px] font-medium text-gray-400 mt-1">Grup Seleksi</span>
                     </div>
                 </div>
-
-                <div>
-                    <label class="cyber-label">Status</label>
-                    <select id="status" class="cyber-input" required>
-                        <option value="">Pilih</option>
-                        <option value="Pelajar">Pelajar</option>
-                        <option value="Mahasiswa">Mahasiswa</option>
-                        <option value="Berkeluarga">Berkeluarga</option>
-                        <option value="Bekerja">Bekerja</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="cyber-label">Minat Utama</label>
-                    <select id="minat" class="cyber-input" required>
-                        <option value="">Pilih</option>
-                        <option value="Astronomi">Astronomi</option>
-                        <option value="Sejarah">Sejarah</option>
-                        <option value="Teknologi">Teknologi</option>
-                        <option value="Fisika/Matematika">Fisika/Matematika</option>
-                        <option value="Sastra">Sastra</option>
-                        <option value="Desain grafis">Desain grafis</option>
-                        <option value="Linguistik/bahasa asing">Linguistik/bahasa asing</option>
-                        <option value="Psikologi">Psikologi</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="cyber-label">Uraikan Pengetahuan (Minat Tersebut)</label>
-                    <textarea id="pengetahuan" class="cyber-input h-24" placeholder="Jelaskan secara singkat..." required></textarea>
-                </div>
-
-                <div>
-                    <label class="cyber-label">Akun Medsos (IG/TikTok/Lainnya)</label>
-                    <input type="text" id="medsos" class="cyber-input" placeholder="@username" required>
-                </div>
-
-                <div id="error-msg" class="text-xs text-red-500 hidden"></div>
-
-                <button type="submit" class="btn-neon w-full mt-4">KIRIM DATA KE GRID</button>
-            </form>
-        </section>
-
-        <!-- Success Section -->
-        <section id="success-section" class="hidden-section text-center">
-            <div class="mb-8">
-                <div class="text-green-500 text-xs mb-2 uppercase tracking-widest">Akses Diterima</div>
-                <h2 class="text-white font-['Orbitron'] text-lg">IDENTITAS TERDAFTAR</h2>
-                <p class="text-[0.65rem] text-gray-500 mt-2">Unduh kartu di bawah dan simpan sebagai bukti seleksi.</p>
             </div>
 
-            <div class="card-container block" id="download-area">
-                <!-- Member Card -->
-                <div class="member-card" id="memberCard">
-                    <div class="card-bg-pattern"></div>
-                    <div class="scan-line"></div>
-                    <div class="card-header">
-                        <span class="card-title">ECI MEMBER CARD</span>
-                        <span class="text-[8px] text-gray-500">INDONESIA / 2026</span>
-                    </div>
-                    <div class="mt-4">
-                        <div id="display-nama" class="card-name">NAMA LENGKAP</div>
-                        <div class="grid grid-cols-2 gap-2 mt-4">
+            <!-- PAGE 1: FORM PENDAFTARAN -->
+            <section id="page-form" class="transition-all duration-300">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <h1 class="font-heading font-extrabold text-lg sm:text-xl tracking-tight text-gray-900 mb-2">Formulir Pendaftaran Anggota</h1>
+                    <p class="text-xs text-gray-500 leading-relaxed max-w-sm mx-auto">Selamat datang! Silakan lengkapi formulir di bawah ini dengan data asli untuk memulai perjalanan belajarmu bersama ECI.</p>
+                </div>
+
+                <div class="bg-white border border-gray-100 rounded-2xl p-5 sm:p-8 max-w-2xl mx-auto shadow-sm">
+                    <form id="registration-form" class="space-y-5" onsubmit="handleFormSubmit(event)">
+                        
+                        <!-- Nama Lengkap -->
+                        <div>
+                            <label for="fullName" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Nama Lengkap</label>
+                            <input type="text" id="fullName" name="fullName" required 
+                                   placeholder="Masukkan nama lengkap Anda sesuai identitas" 
+                                   class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all placeholder:text-gray-400">
+                        </div>
+
+                        <!-- Grid: Tanggal Lahir & Gender -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Tanggal Lahir -->
                             <div>
-                                <span class="cyber-label" style="font-size: 6px;">SECTOR</span>
-                                <span id="display-minat" class="text-white text-[10px] uppercase">ASTRONOMI</span>
+                                <label for="birthDate" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                <input type="date" id="birthDate" name="birthDate" required 
+                                       class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all text-gray-700">
+                                <span class="text-[10px] text-gray-400 mt-1 block">Batas usia pendaftaran: 14 s.d 40 tahun.</span>
                             </div>
+
+                            <!-- Gender -->
                             <div>
-                                <span class="cyber-label" style="font-size: 6px;">STATUS</span>
-                                <span id="display-status" class="text-white text-[10px] uppercase">AKTIF</span>
+                                <label class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Jenis Kelamin</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center justify-center gap-2 border border-gray-200 rounded-lg p-2.5 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-all text-xs">
+                                        <input type="radio" name="gender" value="Laki-Laki" checked class="w-3.5 h-3.5 text-eci-600 focus:ring-eci-500 border-gray-300">
+                                        <span class="text-gray-700 text-[11px] font-medium">Laki-Laki</span>
+                                    </label>
+                                    <label class="flex items-center justify-center gap-2 border border-gray-200 rounded-lg p-2.5 cursor-pointer bg-gray-50/50 hover:bg-gray-50 transition-all text-xs">
+                                        <input type="radio" name="gender" value="Perempuan" class="w-3.5 h-3.5 text-eci-600 focus:ring-eci-500 border-gray-300">
+                                        <span class="text-gray-700 text-[11px] font-medium">Perempuan</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Kependudukan -->
+                        <div>
+                            <label for="status" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Status Saat Ini</label>
+                            <select id="status" name="status" required
+                                    class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all text-gray-700">
+                                <option value="" disabled selected>Pilih status kesibukan Anda</option>
+                                <option value="Pelajar">Pelajar</option>
+                                <option value="Mahasiswa">Mahasiswa</option>
+                                <option value="Bekerja">Bekerja</option>
+                                <option value="Berkeluarga">Berkeluarga</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+
+                        <!-- Minat Utama -->
+                        <div>
+                            <label id="interest-label" for="interest" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Minat Bidang Keilmuan / Divisi</label>
+                            <select id="interest" name="interest" required
+                                    class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all text-gray-700">
+                                <option value="" disabled selected>Pilih bidang yang paling Anda minati</option>
+                                <option value="Astronomi">Astronomi</option>
+                                <option value="History/Sejarah">History / Sejarah</option>
+                                <option value="Teknologi informasi & Coding">Teknologi Informasi & Coding</option>
+                                <option value="Psikologi & Mental health">Psikologi & Mental Health</option>
+                                <option value="Linguistik & Bahasa asing">Linguistik & Bahasa Asing</option>
+                                <option value="Sastra & Kepenulisan kreatif">Sastra & Kepenulisan Kreatif</option>
+                                <option value="Fisika & Matematika murni">Fisika & Matematika Murni</option>
+                                <option value="Desain grafis & Visual">Desain Grafis & Visual</option>
+                                <option value="Lainnya">Lainnya (Tulis detail di bawah)</option>
+                            </select>
+                        </div>
+
+                        <!-- Pengetahuan terhadap Minat -->
+                        <div>
+                            <label for="knowledge" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Pengetahuan terhadap minat tersebut</label>
+                            <textarea id="knowledge" name="knowledge" rows="3" required
+                                      placeholder="Gambarkan pemahaman awal Anda terhadap bidang minat yang Anda pilih di atas..."
+                                      class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all placeholder:text-gray-400 resize-none"></textarea>
+                        </div>
+
+                        <!-- Alasan Bergabung -->
+                        <div>
+                            <label for="reason" class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Alasan Bergabung dengan ECI</label>
+                            <textarea id="reason" name="reason" rows="3" required
+                                      placeholder="Apa motivasi utama Anda ingin bergabung di komunitas Education Community Indonesia?"
+                                      class="w-full text-xs px-3.5 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-1 focus:ring-eci-600 focus:border-eci-600 bg-gray-50/50 transition-all placeholder:text-gray-400 resize-none"></textarea>
+                        </div>
+
+                        <!-- Upload Foto Profil (Member Card) -->
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-700 tracking-wide uppercase mb-1.5">Foto Profil <span class="text-xs text-gray-400 font-normal lowercase">(untuk kartu anggota)</span></label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-200 border-dashed rounded-lg bg-gray-50/20 hover:bg-gray-50/50 transition-all relative" id="dropzone">
+                                <div class="space-y-1 text-center" id="upload-prompt">
+                                    <div class="flex justify-center text-gray-400" id="upload-icon-wrapper">
+                                        <i data-lucide="image" class="w-8 h-8 stroke-[1.25]"></i>
+                                    </div>
+                                    <div class="flex text-xs text-gray-600 justify-center">
+                                        <label for="profilePhoto" class="relative cursor-pointer rounded-md font-semibold text-eci-600 hover:text-eci-700 focus-within:outline-none">
+                                            <span>Unggah file foto</span>
+                                            <input id="profilePhoto" name="profilePhoto" type="file" accept="image/*" class="sr-only" required onchange="handlePhotoUpload(event)">
+                                        </label>
+                                        <p class="pl-1">atau seret ke sini</p>
+                                    </div>
+                                    <p class="text-[9px] text-gray-400">Rekomendasi rasio 1:1 (persegi) maksimal ukuran 2MB</p>
+                                </div>
+                                <!-- Preview Image Layer -->
+                                <div id="photo-preview-container" class="hidden absolute inset-0 flex items-center justify-center bg-white rounded-lg p-2">
+                                    <div class="relative h-full aspect-square border border-gray-200 rounded-md overflow-hidden bg-gray-50 flex items-center justify-center">
+                                        <img id="photo-preview" src="#" alt="Preview Foto" class="object-cover h-full w-full">
+                                        <button type="button" onclick="resetPhotoUpload(event)" class="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded-full shadow-sm transition-all">
+                                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                    <div class="ml-4 text-left">
+                                        <p id="preview-filename" class="text-[10px] font-semibold text-gray-700 truncate max-w-[150px]">file_name.jpg</p>
+                                        <p class="text-[9px] text-emerald-500 flex items-center gap-0.5 mt-0.5"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> Siap digunakan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox Persetujuan -->
+                        <div class="pt-2">
+                            <label class="flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" id="agreement" name="agreement" required class="mt-0.5 rounded border-gray-300 text-eci-600 focus:ring-eci-500">
+                                <span class="text-[11px] text-gray-500 leading-snug">Dengan ini saya setuju terhadap <a href="#" class="text-eci-600 hover:underline">kebijakan dan peraturan</a> yang berlaku di dalam keanggotaan Education Community Indonesia (ECI).</span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-eci-600 hover:bg-eci-700 text-white font-semibold text-xs py-3 px-4 rounded-lg shadow-sm transition-all duration-200">
+                                Kirim Formulir & Buat Kartu
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- PAGE 2: SURAT FORMULIR & MEMBER CARD -->
+            <section id="page-success" class="hidden transition-all duration-300">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 mb-3">
+                        <i data-lucide="badge-check" class="w-6 h-6 stroke-[1.5]"></i>
+                    </div>
+                    <h1 class="font-heading font-extrabold text-lg sm:text-xl tracking-tight text-gray-900 mb-2">Pendaftaran Berhasil Dikirim!</h1>
+                    <p class="text-xs text-gray-500 leading-relaxed max-w-sm mx-auto">Selamat! Anda telah terdaftar sementara. Silakan simpan Surat Pendaftaran dan Member Card di bawah untuk tahap wawancara/grup seleksi.</p>
+                </div>
+
+                <!-- DUAL LAYOUT: SURAT & CARD -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto items-start">
+                    
+                    <!-- COLUMN LEFT: SURAT FORMULIR (8 COLS) -->
+                    <div class="lg:col-span-7 flex flex-col items-center">
+                        <div class="w-full border border-gray-100 rounded-xl bg-white p-3 shadow-xs mb-3 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase">1. Dokumen Registrasi</span>
+                            <button onclick="downloadDocument('registration-sheet', 'Surat_Registrasi_ECI')" class="inline-flex items-center gap-1.5 bg-eci-50 hover:bg-eci-100 text-eci-700 border border-eci-200 px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Surat
+                            </button>
+                        </div>
+
+                        <!-- Surat Formulir Container (A4 Proportional Preview) -->
+                        <div class="w-full overflow-x-auto pb-4 scrollbar-thin">
+                            <div id="registration-sheet" class="w-[595px] h-[842px] bg-white text-gray-900 p-12 border border-gray-100 flex flex-col justify-between mx-auto relative select-none shadow-md" style="font-family: 'Inter', sans-serif;">
+                                
+                                <!-- Letter Border Decoration -->
+                                <div class="absolute inset-0 border-[16px] border-double border-gray-50/50 pointer-events-none"></div>
+                                <div class="absolute top-4 left-4 right-4 bottom-4 border border-gray-200/40 pointer-events-none"></div>
+
+                                <div class="relative z-10 flex-grow flex flex-col justify-between">
+                                    <!-- Header Surat -->
+                                    <div>
+                                        <div class="flex items-center justify-between border-b-2 border-gray-950 pb-4 mb-6">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-eci-600 text-white font-heading font-extrabold text-base tracking-wider">
+                                                    E
+                                                </div>
+                                                <div>
+                                                    <h2 class="font-heading font-extrabold text-sm tracking-wide text-neutral-950">EDUCATION COMMUNITY INDONESIA</h2>
+                                                    <p class="text-[9px] text-gray-500 uppercase tracking-widest mt-0.5">Wadah Edukasi & Pengembagan Potensi Pemuda</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-[9px] text-gray-400 font-semibold tracking-wide">DOKUMEN RESMI</p>
+                                                <p class="text-[10px] text-gray-800 font-bold font-mono tracking-wider mt-0.5" id="doc-id">ECI/REG/2026/0000</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Judul Dokumen -->
+                                        <div class="text-center my-6">
+                                            <h3 class="font-heading font-bold text-xs uppercase tracking-[0.2em] text-neutral-950 border-b border-gray-200 inline-block pb-1">Surat Bukti Pendaftaran</h3>
+                                            <p class="text-[9px] text-gray-400 mt-1 font-medium">Berdasarkan Pengisian Formulir Elektronik</p>
+                                        </div>
+
+                                        <!-- Pengantar -->
+                                        <p class="text-[10px] text-gray-600 leading-relaxed mb-6">
+                                            Dengan ini, Pengurus Pusat <strong>Education Community Indonesia (ECI)</strong> menerangkan bahwa data di bawah ini adalah benar telah terdaftar sebagai calon anggota baru ECI gelombang tahun berjalan:
+                                        </p>
+
+                                        <!-- Data Isian Formulir -->
+                                        <div class="space-y-3 pl-2">
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Nama Lengkap</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-neutral-950 font-semibold uppercase" id="out-full-name">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Tanggal Lahir (Umur)</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-neutral-950" id="out-birth">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Jenis Kelamin</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-neutral-950" id="out-gender">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Status Saat Ini</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-neutral-950" id="out-status">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Divisi / Minat Keilmuan</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-eci-600 font-bold" id="out-interest">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Pemahaman Minat</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-gray-600 leading-relaxed italic" id="out-knowledge">-</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-1 items-start text-[10px]">
+                                                <div class="col-span-4 text-gray-400 uppercase tracking-wider font-semibold text-[9px]">Alasan Bergabung</div>
+                                                <div class="col-span-1 text-gray-400 text-center">:</div>
+                                                <div class="col-span-7 text-gray-600 leading-relaxed" id="out-reason">-</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Catatan Peraturan -->
+                                        <div class="mt-8 p-3 bg-gray-50/50 border border-gray-200/50 rounded-lg text-[9px] text-gray-500 leading-relaxed">
+                                            <strong>Pernyataan Pemohon:</strong> Calon anggota menyatakan bersedia mengikuti seluruh program pembinaan, diskusi akademis, serta mematuhi norma sosial dan regulasi komunitas yang dirancang untuk mendukung iklim pembelajaran yang sehat dan berintegritas tinggi di Indonesia.
+                                        </div>
+                                    </div>
+
+                                    <!-- Footer & Tanda Tangan -->
+                                    <div class="flex items-end justify-between mt-8 pt-4 border-t border-gray-100">
+                                        <div class="text-left">
+                                            <p class="text-[9px] text-gray-400">Verifikasi Sistem ECI</p>
+                                            <p class="text-[9px] text-gray-700 font-semibold mt-1 flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                TERVERIFIKASI DIGITAL
+                                            </p>
+                                        </div>
+                                        <div class="text-center w-36">
+                                            <p class="text-[9px] text-gray-400 mb-10" id="current-date">Jakarta, 21 Mei 2026</p>
+                                            <div class="text-[10px] font-bold text-gray-900 tracking-wide border-t border-gray-300 pt-1 uppercase" id="sign-name">
+                                                Nama Lengkap
+                                            </div>
+                                            <p class="text-[8px] text-gray-400 mt-0.5">Calon Anggota ECI</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="absolute bottom-4 right-4 text-right">
-                        <div id="display-id" class="card-id">ID: ECI-8892-0X</div>
+
+                    <!-- COLUMN RIGHT: MEMBER CARD (5 COLS) -->
+                    <div class="lg:col-span-5 flex flex-col items-center">
+                        <div class="w-full border border-gray-100 rounded-xl bg-white p-3 shadow-xs mb-3 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase">2. E-Member Card</span>
+                            <button onclick="downloadDocument('member-card', 'Member_Card_ECI')" class="inline-flex items-center gap-1.5 bg-eci-50 hover:bg-eci-100 text-eci-700 border border-eci-200 px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-all">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Kartu
+                            </button>
+                        </div>
+
+                        <!-- Member Card (Proportional Layout) -->
+                        <div id="member-card" class="w-[340px] h-[520px] bg-slate-950 text-white rounded-2xl overflow-hidden shadow-xl border border-white/10 flex flex-col justify-between relative select-none">
+                            
+                            <!-- Background Pattern Decor -->
+                            <div class="absolute -top-16 -right-16 w-48 h-48 bg-eci-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                            <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-eci-700/10 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <!-- Inner border layout -->
+                            <div class="absolute inset-2.5 border border-white/5 rounded-xl pointer-events-none z-10"></div>
+
+                            <!-- CARD UPPER: BRAND & WATERMARK -->
+                            <div class="p-6 pt-7 relative z-10">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center w-7 h-7 rounded-md bg-eci-600 text-white font-heading font-extrabold text-[10px] tracking-wider">
+                                            E
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-heading font-extrabold text-[10px] tracking-wide text-white leading-none">ECI</span>
+                                            <span class="text-[6px] tracking-widest font-bold text-eci-200 uppercase leading-none mt-0.5">COMMUNITY</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[7px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">MEMBER CARD</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD CENTRAL: PROFILE PIC -->
+                            <div class="flex flex-col items-center justify-center relative z-10 px-6">
+                                <div class="relative w-28 h-28 rounded-full overflow-hidden p-1 bg-gradient-to-tr from-eci-600 to-emerald-400 avatar-glow mb-4">
+                                    <div class="w-full h-full rounded-full overflow-hidden bg-slate-900 flex items-center justify-center">
+                                        <img id="card-photo" src="https://via.placeholder.com/150" alt="Foto Member" class="object-cover w-full h-full">
+                                    </div>
+                                </div>
+                                <h3 id="card-name" class="font-heading font-bold text-sm tracking-wide text-center uppercase truncate max-w-[260px] text-slate-100">Nama Lengkap</h3>
+                                <div class="inline-flex items-center gap-1 mt-1 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                                    <span class="w-1 h-1 rounded-full bg-emerald-400"></span>
+                                    <span id="card-interest" class="text-[8px] font-bold tracking-wider text-slate-300 uppercase">ASTRONOMI</span>
+                                </div>
+                            </div>
+
+                            <!-- CARD LOWER: INFO METADATA -->
+                            <div class="p-6 pb-7 bg-white/[0.02] border-t border-white/5 relative z-10 grid grid-cols-2 gap-4">
+                                <div class="text-left">
+                                    <span class="text-[7px] text-slate-500 uppercase tracking-widest font-semibold block mb-0.5">ID ANGGOTA</span>
+                                    <span id="card-id" class="text-[9px] text-slate-300 font-mono font-semibold tracking-wider">ECI-2605412</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[7px] text-slate-500 uppercase tracking-widest font-semibold block mb-0.5">TANGGAL BERGABUNG</span>
+                                    <span id="card-date" class="text-[9px] text-slate-300 font-semibold">21 Mei 2026</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Form Card -->
-                <div class="form-summary-card text-left" id="formCard">
-                    <div class="flex justify-between border-b border-gray-800 pb-2 mb-2">
-                        <span class="text-pink-500 font-bold uppercase">Formulir Pendaftaran</span>
-                        <span class="text-gray-600">VERIFIED</span>
-                    </div>
-                    <div class="space-y-1">
-                        <p><span class="text-gray-500">NAME:</span> <span id="s-name" class="text-white"></span></p>
-                        <p><span class="text-gray-500">DOB:</span> <span id="s-dob" class="text-white"></span></p>
-                        <p><span class="text-gray-500">GENDER:</span> <span id="s-gender" class="text-white"></span></p>
-                        <p><span class="text-gray-500">MINAT:</span> <span id="s-minat" class="text-white"></span></p>
-                        <p><span class="text-gray-500">MEDSOS:</span> <span id="s-medsos" class="text-white"></span></p>
-                        <p class="mt-2 text-gray-500">DESKRIPSI:</p>
-                        <p id="s-desc" class="text-[8px] text-gray-400 italic"></p>
+                <!-- NAVIGATION TO GROUP SELEKSI -->
+                <div class="mt-12 bg-white border border-eci-100 rounded-2xl p-6 sm:p-8 max-w-2xl mx-auto shadow-sm text-center">
+                    <span class="text-[9px] font-extrabold tracking-[0.25em] text-eci-600 uppercase block mb-2">Langkah Terakhir</span>
+                    <h2 class="font-heading font-bold text-base text-gray-900 mb-3">Kirimkan Bukti ke Grup Seleksi</h2>
+                    <p class="text-xs text-gray-500 leading-relaxed mb-6 max-w-md mx-auto">
+                        Setelah berhasil mengunduh <strong>Surat Pendaftaran</strong> dan <strong>Member Card</strong> di atas, Anda wajib masuk ke grup seleksi resmi WhatsApp untuk proses verifikasi dan wawancara lebih lanjut.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                        <a href="https://chat.whatsapp.com/HHcjDimJuVABphM5cFg6XU?s=cl&p=a&mlu=1" target="_blank" rel="noopener noreferrer" 
+                           class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-3 px-5 rounded-lg shadow-sm transition-all">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.198 1.451 4.821 1.452 5.429 0 9.849-4.416 9.852-9.848.002-2.631-1.02-5.101-2.88-6.963C16.582 1.93 14.113.908 11.5.908c-5.43 0-9.85 4.416-9.854 9.849-.001 1.83.483 3.61 1.4 5.168L1.9 22.052l6.236-1.636zM18.84 15.65c-.3-.15-1.78-.88-2.05-.98-.28-.1-.49-.15-.69.15-.2.3-.77.98-.94 1.18-.18.2-.35.23-.65.08-.3-.15-1.264-.467-2.407-1.485-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.13.3-.35.45-.53.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.53-.07-.15-.69-1.65-.95-2.27-.25-.61-.51-.53-.69-.53-.18 0-.38-.02-.58-.02-.2 0-.53.07-.8.38-.28.3-1.06 1.03-1.06 2.5 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.5.71.3 1.27.49 1.7.63.72.22 1.37.19 1.88.11.57-.08 1.78-.73 2.03-1.43.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35z"/>
+                            </svg>
+                            Gabung Grup Seleksi WA
+                        </a>
+                        <button onclick="restartRegistration()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-5 py-3 rounded-lg text-xs font-semibold transition-all">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Daftar Ulang
+                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
+        </main>
 
-            <div class="mt-8 space-y-4">
-                <button onclick="downloadCards()" class="btn-neon w-full">UNDUH KARTU (.PNG)</button>
-                <a href="https://chat.whatsapp.com/HHcjDimJuVABphM5cFg6XU?mode=gi_t" target="_blank" class="block w-full text-center p-3 border border-pink-500 text-pink-500 text-[0.7rem] hover:bg-pink-500 hover:text-black transition uppercase font-bold">
-                    Masuk Grup WhatsApp Seleksi
-                </a>
+        <!-- FOOTER -->
+        <footer class="bg-white border-t border-gray-100 py-6 px-4">
+            <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-[10px] text-gray-400 font-semibold tracking-wider">© 2026 EDUCATION COMMUNITY INDONESIA</p>
+                    <p class="text-[9px] text-gray-400 mt-0.5">Didesain dengan pendekatan minimalis, clean, dan responsif.</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <a href="#" class="hover:text-eci-600 transition-colors">Syarat & Ketentuan</a>
+                    <span class="w-1.5 h-1.5 rounded-full bg-gray-200"></span>
+                    <a href="#" class="hover:text-eci-600 transition-colors">Kebijakan Privasi</a>
+                </div>
             </div>
-        </section>
-    </main>
+        </footer>
+    </div>
 
-    <footer class="p-4 text-center border-t border-gray-900">
-        <p class="text-[0.5rem] text-gray-700 tracking-[0.5em] uppercase">© 2026 ECI // ALL RIGHTS RESERVED</p>
-    </footer>
+    <!-- NOTIFIKASI / MODAL POPUP (Pengganti Alert Browser) -->
+    <div id="notification-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 text-white rounded-lg px-4 py-3 shadow-lg flex items-center gap-3 border border-white/10 max-w-sm">
+            <div id="toast-icon-wrapper" class="flex-shrink-0">
+                <!-- Icon injected by JS -->
+            </div>
+            <div>
+                <p id="toast-message" class="text-[10px] font-medium leading-normal">Pesan notifikasi di sini.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Handle Loader
-        window.addEventListener('load', () => {
+        // Inisialisasi global state & UI
+        let selectedPhotoDataUrl = null;
+
+        // Inisialisasi Lucide Icons
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // 3-Seconds Loading Screen
             setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 1000);
+                const loadingScreen = document.getElementById('loading-screen');
+                const mainContent = document.getElementById('main-content');
+                
+                loadingScreen.classList.add('opacity-0');
+                mainContent.classList.remove('opacity-0');
+                
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
             }, 3000);
         });
 
-        const eciForm = document.getElementById('eci-form');
-        const formSection = document.getElementById('form-section');
-        const successSection = document.getElementById('success-section');
-        const errorMsg = document.getElementById('error-msg');
+        // Event listener untuk drag and drop foto profil
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('profilePhoto');
 
-        eciForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Validasi Usia
-            const dob = new Date(document.getElementById('dob').value);
-            const diff = Date.now() - dob.getTime();
-            const age = new Date(diff).getUTCFullYear() - 1970;
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('bg-eci-50/50', 'border-eci-300');
+            }, false);
+        });
 
-            if (age < 14) {
-                errorMsg.innerText = "Error: Usia minimum adalah 14 tahun untuk bergabung.";
-                errorMsg.classList.remove('hidden');
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('bg-eci-50/50', 'border-eci-300');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if(files.length) {
+                fileInput.files = files;
+                handlePhotoFiles(files[0]);
+            }
+        });
+
+        // Menangani pemilihan foto profil
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handlePhotoFiles(file);
+            }
+        }
+
+        function handlePhotoFiles(file) {
+            // Validasi format file gambar
+            if (!file.type.match('image.*')) {
+                showToast("File harus berformat gambar!", "error");
+                return;
+            }
+            // Validasi ukuran file (Max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast("Ukuran foto tidak boleh lebih dari 2MB!", "error");
                 return;
             }
 
-            errorMsg.classList.add('hidden');
-
-            // Collect Data
-            const data = {
-                nama: document.getElementById('nama').value,
-                dob: document.getElementById('dob').value,
-                gender: document.getElementById('gender').value,
-                status: document.getElementById('status').value,
-                minat: document.getElementById('minat').value,
-                pengetahuan: document.getElementById('pengetahuan').value,
-                medsos: document.getElementById('medsos').value,
-                id: 'ECI-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.random().toString(36).substring(7).toUpperCase()
-            };
-
-            // Populate Cards
-            document.getElementById('display-nama').innerText = data.nama;
-            document.getElementById('display-minat').innerText = data.minat;
-            document.getElementById('display-status').innerText = data.status;
-            document.getElementById('display-id').innerText = 'ID: ' + data.id;
-
-            document.getElementById('s-name').innerText = data.nama;
-            document.getElementById('s-dob').innerText = data.dob;
-            document.getElementById('s-gender').innerText = data.gender;
-            document.getElementById('s-minat').innerText = data.minat;
-            document.getElementById('s-medsos').innerText = data.medsos;
-            document.getElementById('s-desc').innerText = data.pengetahuan;
-
-            // Transition
-            formSection.classList.add('hidden-section');
-            successSection.classList.remove('hidden-section');
-            window.scrollTo(0, 0);
-        });
-
-        // Download Function
-        async function downloadCards() {
-            const btn = document.querySelector('button[onclick="downloadCards()"]');
-            btn.innerText = "PROCESSING...";
-            
-            try {
-                const memberCard = document.getElementById('memberCard');
-                const formCard = document.getElementById('formCard');
-
-                // Canvas untuk Member Card
-                const canvas1 = await html2canvas(memberCard, { backgroundColor: '#050505', scale: 2 });
-                const link1 = document.createElement('a');
-                link1.download = 'ECI_Member_Card.png';
-                link1.href = canvas1.toDataURL();
-                link1.click();
-
-                // Canvas untuk Form Card
-                const canvas2 = await html2canvas(formCard, { backgroundColor: '#050505', scale: 2 });
-                const link2 = document.createElement('a');
-                link2.download = 'ECI_Formulir_Card.png';
-                link2.href = canvas2.toDataURL();
-                link2.click();
-
-                btn.innerText = "UNDUH BERHASIL";
-            } catch (err) {
-                console.error(err);
-                btn.innerText = "GAGAL MENGUNDUH";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedPhotoDataUrl = e.target.result;
+                
+                // Atur ke image preview form
+                document.getElementById('photo-preview').src = selectedPhotoDataUrl;
+                document.getElementById('preview-filename').textContent = file.name;
+                
+                // Tampilkan Container Preview, sembunyikan prompt upload awal
+                document.getElementById('photo-preview-container').classList.remove('hidden');
+                document.getElementById('upload-prompt').classList.add('opacity-0');
             }
+            reader.readAsDataURL(file);
+        }
+
+        // Reset Foto Upload
+        function resetPhotoUpload(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            
+            selectedPhotoDataUrl = null;
+            fileInput.value = '';
+            
+            document.getElementById('photo-preview-container').classList.add('hidden');
+            document.getElementById('upload-prompt').classList.remove('opacity-0');
+        }
+
+        // Validasi Umur (Min 14, Max 40)
+        function checkAgeValidity(birthDateString) {
+            const birthDate = new Date(birthDateString);
+            const today = new Date();
+            
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return {
+                isValid: age >= 14 && age <= 40,
+                calculatedAge: age
+            };
+        }
+
+        // Tampilkan Toast Notifikasi Kustom
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('notification-toast');
+            const messageEl = document.getElementById('toast-message');
+            const iconWrapper = document.getElementById('toast-icon-wrapper');
+            
+            messageEl.textContent = message;
+            
+            if(type === "success") {
+                iconWrapper.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>`;
+            } else {
+                iconWrapper.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 text-red-400"></i>`;
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 4000);
+        }
+
+        // Kirim Formulir & Validasi
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('registration-form');
+            const birthDateValue = form.birthDate.value;
+            const agreeCheckbox = document.getElementById('agreement');
+
+            // 1. Validasi Umur
+            const ageValidation = checkAgeValidity(birthDateValue);
+            if (!ageValidation.isValid) {
+                showToast(`Pendaftaran ditolak. Umur Anda (${ageValidation.calculatedAge} tahun) tidak memenuhi syarat (14-40 tahun).`, "error");
+                return;
+            }
+
+            // 2. Validasi unggahan foto
+            if(!selectedPhotoDataUrl) {
+                showToast("Silakan unggah foto profil Anda terlebih dahulu!", "error");
+                return;
+            }
+
+            // 3. Validasi Checkbox Syarat & Ketentuan
+            if (!agreeCheckbox.checked) {
+                showToast("Anda harus menyetujui syarat & kebijakan komunitas!", "error");
+                return;
+            }
+
+            // Generate metadata acak untuk ID Member & Dokumen
+            const randomID = Math.floor(100000 + Math.random() * 900000);
+            const docNumber = `ECI/REG/2026/${randomID}`;
+            const memberID = `ECI-260${randomID}`;
+
+            // Mengisi Data ke Surat Pendaftaran
+            document.getElementById('doc-id').textContent = docNumber;
+            document.getElementById('out-full-name').textContent = form.fullName.value;
+            document.getElementById('sign-name').textContent = form.fullName.value;
+            
+            // Format tanggal lahir indah
+            const birthDateObj = new Date(birthDateValue);
+            const formattedBirth = birthDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('out-birth').textContent = `${formattedBirth} (${ageValidation.calculatedAge} Tahun)`;
+            
+            document.getElementById('out-gender').textContent = form.gender.value;
+            document.getElementById('out-status').textContent = form.status.value;
+            document.getElementById('out-interest').textContent = form.interest.value;
+            document.getElementById('out-knowledge').textContent = form.knowledge.value;
+            document.getElementById('out-reason').textContent = form.reason.value;
+
+            // Mengisi Data ke Member Card
+            document.getElementById('card-id').textContent = memberID;
+            document.getElementById('card-name').textContent = form.fullName.value;
+            document.getElementById('card-interest').textContent = form.interest.value.toUpperCase();
+            document.getElementById('card-photo').src = selectedPhotoDataUrl;
+
+            // Set Tanggal Daftar Sekarang
+            const currentDateObj = new Date();
+            const formattedCurrentDate = currentDateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('current-date').textContent = `Jakarta, ${formattedCurrentDate}`;
+            document.getElementById('card-date').textContent = formattedCurrentDate;
+
+            // Transisi Halaman (Halaman Form -> Halaman Dokumen & Card)
+            document.getElementById('page-form').classList.add('hidden');
+            document.getElementById('page-success').classList.remove('hidden');
+            
+            // Perbarui indikator langkah di atas
+            document.getElementById('step-dot-2').classList.remove('bg-gray-100', 'text-gray-400');
+            document.getElementById('step-dot-2').classList.add('bg-eci-600', 'text-white');
+            document.getElementById('step-dot-3').classList.remove('bg-gray-100', 'text-gray-400');
+            document.getElementById('step-dot-3').classList.add('bg-eci-600', 'text-white');
+            document.getElementById('line-progress').style.width = '100%';
+
+            showToast("Pendaftaran sukses dibuat! Silakan unduh dokumen Anda.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mengunduh Dokumen / Kartu Menggunakan html2canvas
+        function downloadDocument(elementId, filenamePrefix) {
+            const element = document.getElementById(elementId);
+            
+            showToast("Sedang menyiapkan dokumen untuk diunduh...");
+            
+            // Konfigurasi html2canvas agar jernih & beresolusi tinggi (scale: 2)
+            html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: null
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `${filenamePrefix}_${Date.now()}.png`;
+                link.href = imgData;
+                link.click();
+                showToast("Unduhan berhasil dimulai!");
+            }).catch(err => {
+                console.error("Gagal membuat gambar: ", err);
+                showToast("Terjadi kesalahan saat mengunduh dokumen.", "error");
+            });
+        }
+
+        // Kembali ke Formulir Pendaftaran Awal
+        function restartRegistration() {
+            document.getElementById('registration-form').reset();
+            resetPhotoUpload({ stopPropagation: () => {}, preventDefault: () => {} });
+            
+            document.getElementById('page-success').classList.add('hidden');
+            document.getElementById('page-form').classList.remove('hidden');
+            
+            // Atur ulang indikator langkah
+            document.getElementById('step-dot-2').classList.add('bg-gray-100', 'text-gray-400');
+            document.getElementById('step-dot-2').classList.remove('bg-eci-600', 'text-white');
+            document.getElementById('step-dot-3').classList.add('bg-gray-100', 'text-gray-400');
+            document.getElementById('step-dot-3').classList.remove('bg-eci-600', 'text-white');
+            document.getElementById('line-progress').style.width = '0%';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
